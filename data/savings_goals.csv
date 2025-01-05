@@ -1,0 +1,10 @@
+Goal_id,Target_amount,start_date,end_date,Goal_status,Goal_description,Achieved_amount,Goal_type,User_id,family_head_id
+2,6000.0,2024-12-21,2024-12-23,On-going,total to be 6000,1000.0,Personal,1,1
+3,7000.0,2024-12-27,2024-12-28,Completed,total to be 7000,7000.0,Family,1,1
+4,7000.0,2024-12-27,2024-12-28,Completed,total to be 7000,7000.0,Family,,
+5,7000.0,2024-12-19,2024-12-27,On-going,total to be 7000,6000.0,Personal,,
+6,7000.0,2024-12-19,2024-12-27,On-going,total to be 7000,6000.0,Personal,,
+7,7000.0,2024-12-19,2024-12-27,On-going,total to be 7000,6000.0,Personal,,
+8,90.0,2024-12-23,2024-12-25,On-going,total to be 90,10.0,Personal,1,1
+9,90.0,2024-12-24,2024-12-25,On-going,total to be 90,60.0,Personal,1,1
+10,8000.0,2024-12-24,2024-12-25,On-going,total to be 8000,7500.0,Personal,1,1

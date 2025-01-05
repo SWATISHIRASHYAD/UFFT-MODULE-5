@@ -1,0 +1,2 @@
+ExpenseID,UserID,categoryid,amount,expensedate,expensedesc,receiptpath,expensetime
+3,1,Groceries,200,2024-01-07,Weekly groceries,/receipts/receipt3.jpg,10:00:00

@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #6b597f;
+    color: white;
+}
+
+.container {
+    margin: 20px auto;
+    margin-top: 5%;
+    max-width: 1500px;
+    text-align: center;
+    justify-content: center;
+    color: white;
+}
+
+h1 {
+    color: white;
+}
+
+.controls {
+    margin-bottom: 20px;
+}
+
+
+
+.controls button, .controls .btn {
+    margin: 30px;
+    padding: 20px 15px;
+    background-color: #bd6c73;
+    color: #fff;
+    width: 250px;
+    height: 100px;
+    border: none;
+    border-color: black;
+    font-size: larger;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.controls button:hover, .controls .btn:hover {
+    background-color: #92a1c2;
+    transform: scale(1.05);
+}
+
+.plot-container img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 20px;
+}

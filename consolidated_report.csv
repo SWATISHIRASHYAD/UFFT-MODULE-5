@@ -1,0 +1,15 @@
+Budgets
+budget_id,category_id,user_id,limit,start_date,end_date,created_at
+1,1,1,80.0,2024-12-27,2024-12-29,0000-00-00 00:00:00
+2,2,1,23.0,2024-12-27,2024-12-29,0000-00-00 00:00:00
+3,3,1,800.0,2024-12-20,2024-12-31,0000-00-00 00:00:00
+
+Expenses
+ExpenseID,UserID,categoryid,amount,expensedate,expensedesc,receiptpath,expensetime
+3,1001,food,5000,2024-12-20,For food,C:\\swati,03:00:00
+4,2,education,50000,2024-12-18,for education,C:\\swati,11:55:00
+5,1,groceries,700,2024-12-19,for groceries,C:\\swati,08:05:00
+6,1,education,3000,2024-12-17,for education,C:\\swati,00:29:00
+7,2,food,560,2024-12-25,For food,C:\\swati,00:58:00
+
+Savings

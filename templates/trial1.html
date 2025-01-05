@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Finance Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color:BD6C73;
+        }
+        h1 {
+            color: #333;
+            margin-top: 20px;
+        }
+        .button-container {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            width: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        img {
+            margin-top: 20px;
+            max-width: 90%;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Family Finance Dashboard</h1>
+    <div class="button-container">
+        <button onclick="downloadReport()">Download Report</button>
+        <button onclick="showChart('barChart')">Show Bar Chart</button>
+        <button onclick="showChart('pieChart')">Show Pie Chart</button>
+    </div>
+    <div>
+        <img id="chart" src="" alt="Chart will appear here">
+    </div>
+
+    <script>
+        function downloadReport() {
+            window.location.href = '/downloadConsolidatedReport';
+        }
+
+        function showChart(chartType) {
+            const chart = document.getElementById('chart');
+            chart.src = "/${chartType}?t=${new Date().getTime()}"; 
+        }
+    </script>
+</body>
+</html>

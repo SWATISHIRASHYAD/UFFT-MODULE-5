@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Budget Visualization</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Budget Visualization</h1>
+        <form id="filterBudgetForm">
+            <label for="budget_start_date">Start Date:</label>
+            <input type="date" id="budget_start_date" name="start_date">
+
+            <label for="budget_end_date">End Date:</label>
+            <input type="date" id="budget_end_date" name="end_date">
+
+            <label for="budget_category">Category:</label>
+            <select id="budget_category" name="category">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="button" id="filterBudgetButton">Filter</button>
+            <button type="button" id="exportBudgetButton">Export CSV</button>
+        </form>
+
+        <div class="controls">
+            <button id="pie">Budget distribution by category</button>
+            <button id="bar">Budget amounts by category</button>
+            <button id="line">Budget trends over time</button>
+            <a href="/download_budget_csv" class="btn">Download CSV</a>
+        </div>
+        <div class="plot-container">
+            <img id="budget-plot" src="">
+        </div>
+    </div>
+
+    <script>
+        let filters = {};
+
+        function updateFilters() {
+            const startDate = document.getElementById('budget_start_date').value;
+            const endDate = document.getElementById('budget_end_date').value;
+            const category_id = document.getElementById('budget_category').value;
+            filters = { start_date: startDate, end_date: endDate, category_id };
+        }
+
+        function generateBudgetPlot(type) {
+            fetch('/generate_budget_plot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...filters, plot_type: type })
+            })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    document.getElementById('budget-plot').src = url;
+                });
+        }
+
+        document.getElementById('filterBudgetButton').addEventListener('click', () => {
+            updateFilters();
+
+            fetch('/filter_budgets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(filters)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Filtered budgets:', data);
+                    // Display filtered data in a table or chart (optional)
+                });
+        });
+
+        document.getElementById('exportBudgetButton').addEventListener('click', () => {
+            updateFilters();
+
+            fetch('/export_budget_csv', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(filters)
+            })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'filtered_budgets.csv';
+                    a.click();
+                });
+        });
+         
+        document.getElementById('pie').addEventListener('click', () => {
+            generateBudgetPlot('pie');
+        });
+
+        document.getElementById('bar').addEventListener('click', () => {
+            generateBudgetPlot('bar');
+        });
+
+        document.getElementById('line').addEventListener('click', () => {
+            generateBudgetPlot('line');
+        });
+       
+
+        // Modify the download link dynamically
+        document.getElementById('downloadCSVLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            updateFilters();
+
+            const queryParams = new URLSearchParams(filters).toString();
+            const downloadUrl = `/download_expenses_csv?${queryParams}`;
+            window.location.href = downloadUrl;
+        });
+    </script>
+</body>
+
+</html>
+
+
+
+
+
+
+    
+    

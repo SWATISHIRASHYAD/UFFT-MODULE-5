@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Savings Goals Visualization</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Savings Goals Visualization</h1>
+        <form id="filterSavingGoalsForm">
+            <label for="goal_start_date">Start Date:</label>
+            <input type="date" id="goal_start_date" name="start_date">
+
+            <label for="goal_end_date">End Date:</label>
+            <input type="date" id="goal_end_date" name="end_date">
+
+            <label for="goal_status">Status:</label>
+            <select id="goal_status" name="status">
+                <option value="On-going">Ongoing</option>
+                <option value="completed">Completed</option>
+            </select>
+
+            <button type="button" id="filterGoalButton">Filter</button>
+            <button type="button" id="exportGoalButton">Export CSV</button>
+        </form>
+
+        <div class="controls">
+            <button id="pie">Goal distribution by status</button>
+            <button id="bar">Goal progress overview</button>
+            <button id="line">Savings progress over time</button>
+            <a href="/download_goal_csv" class="btn">Download CSV</a>
+        </div>
+        <div class="plot-container">
+            <img id="goal-plot" src="">
+        </div>
+    </div>
+
+    <script>
+        let filters = {};
+
+        function updateFilters() {
+            const startDate = document.getElementById('goal_start_date').value;
+            const endDate = document.getElementById('goal_end_date').value;
+            const status = document.getElementById('goal_status').value;
+            filters = { start_date: startDate, end_date: endDate,  status:status };
+        }
+
+        function generateGoalPlot(type) {
+            fetch('/generate_goal_plot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...filters, plot_type: type })
+            })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    document.getElementById('goal-plot').src = url;
+                });
+        }
+
+        document.getElementById('filterGoalButton').addEventListener('click', () => {
+            updateFilters();
+
+            fetch('/filter_savings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(filters)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Filtered savings:', data);
+                    // Display filtered data in a table or chart (optional)
+                });
+        });
+
+        document.getElementById('exportGoalButton').addEventListener('click', () => {
+            updateFilters();
+
+            fetch('/export_goal_csv', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(filters)
+            })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'filtered_savings.csv';
+                    a.click();
+                });
+        });
+         
+        document.getElementById('pie').addEventListener('click', () => {
+            generateGoalPlot('pie');
+        });
+
+        document.getElementById('bar').addEventListener('click', () => {
+            generateGoalPlot('bar');
+        });
+
+        document.getElementById('line').addEventListener('click', () => {
+            generateGoalPlot('line');
+        });
+       
+
+        // Modify the download link dynamically
+        document.getElementById('downloadCSVLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            updateFilters();
+
+            const queryParams = new URLSearchParams(filters).toString();
+            const downloadUrl = `/download_expenses_csv?${queryParams}`;
+            window.location.href = downloadUrl;
+        });
+    </script>
+</body>
+
+</html>
+
+
+
+
+
+
+    
+    

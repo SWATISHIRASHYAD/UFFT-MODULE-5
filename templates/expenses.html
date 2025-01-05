@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Expense Visualization</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Expense Visualization</h1>
+        <form id="filterForm">
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" name="start_date">
+
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date">
+
+            <label for="category">Category:</label>
+            <select id="category" name="category">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="button" id="filterButton">Filter</button>
+            <button type="button" id="exportButton">Export CSV</button>
+        </form>
+
+        <div class="controls">
+            <button id="pieButton">Expense distribution by category</button>
+            <button id="barButton">Expense amounts by category</button>
+            <button id="lineButton">Expense trends over time</button>
+        
+        </div>
+        <div class="plot-container">
+            <img id="expense-plot" src="">
+        </div>
+    </div>
+
+    <script>
+        let filters = {};
+
+        function updateFilters() {
+            const startDate = document.getElementById('start_date').value;
+            const endDate = document.getElementById('end_date').value;
+            const category = document.getElementById('category').value;
+
+            filters = { start_date: startDate, end_date: endDate, category };
+        }
+
+        function generateExpensePlot(type) {
+            fetch('/generate_expense_plot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...filters, plot_type: type })
+            })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    document.getElementById('expense-plot').src = url;
+                });
+        }
+
+        document.getElementById('filterButton').addEventListener('click', () => {
+            updateFilters();
+
+            fetch('/filter_expenses', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(filters)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Filtered Expenses:', data);
+                    // Display filtered data in a table or chart (optional)
+                });
+        });
+
+        document.getElementById('exportButton').addEventListener('click', () => {
+            updateFilters();
+
+            fetch('/export_expenses_csv', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(filters)
+            })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'filtered_expenses.csv';
+                    a.click();
+                });
+        });
+
+        document.getElementById('pieButton').addEventListener('click', () => {
+            generateExpensePlot('pie');
+        });
+
+        document.getElementById('barButton').addEventListener('click', () => {
+            generateExpensePlot('bar');
+        });
+
+        document.getElementById('lineButton').addEventListener('click', () => {
+            generateExpensePlot('line');
+        });
+
+        // Modify the download link dynamically
+        document.getElementById('downloadCSVLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            updateFilters();
+
+            const queryParams = new URLSearchParams(filters).toString();
+            const downloadUrl = `/download_expenses_csv?${queryParams}`;
+            window.location.href = downloadUrl;
+        });
+    </script>
+</body>
+
+</html>

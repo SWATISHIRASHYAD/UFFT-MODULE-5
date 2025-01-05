@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Savings Goals Visualization</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Savings Goals Visualization</h1>
+        <div class="controls">
+            <button onclick="generateSavingsPlot('pie')">Goals by status</button>
+            <button onclick="generateSavingsPlot('bar')">View Progress Bar</button>
+            <button onclick="generateSavingsPlot('line')">Cumulative achieved amounts</button>
+            <a href="/download_savings_csv" class="btn">Download CSV</a>
+        </div>
+        <div class="plot-container">
+            <img id="savings-plot" src="" >
+        </div>
+    </div>
+
+    <script>
+        function generateSavingsPlot(type) {
+            fetch('/generate_savings_plot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ plot_type: type })
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                document.getElementById('savings-plot').src = url;
+            });
+        }
+    </script>
+</body>
+</html>
