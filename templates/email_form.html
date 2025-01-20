@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Report Email</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Send Report Email</h1>
+        <form id="emailForm" method="POST" action="/send_report_email">
+            <div class="mb-3">
+                <label for="email" class="form-label">Your Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="mb-3">
+                <label for="reportType" class="form-label">Select Report Type</label>
+                <select class="form-select" id="reportType" name="report_type" required>
+                    <option value="" disabled selected>Select a report</option>
+                    <option value="expenses">Expenses Report</option>
+                    <option value="budgets">Budgets Report</option>
+                    <option value="savings">Savings Goals Report</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Report</button>
+        </form>
+        <div id="responseMessage" class="mt-3"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('emailForm');
+        const responseMessage = document.getElementById('responseMessage');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const response = await fetch('/send_report_email', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                responseMessage.innerHTML = `<div class="alert alert-success">${result.message}</div>`;
+            } else {
+                responseMessage.innerHTML = `<div class="alert alert-danger">${result.error}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
