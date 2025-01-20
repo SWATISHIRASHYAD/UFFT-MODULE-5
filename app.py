@@ -4,6 +4,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import io
 import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from tabulate import tabulate
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management
@@ -456,6 +461,67 @@ def download_savings_csv():
     df.to_csv(file_path, index=False)
     return send_file(file_path, as_attachment=True)
 
+# Function to send email with attachment
+
+# Route to render the email form
+@app.route('/test_email')
+def email_form():
+    return render_template('email_form.html')
+
+# Route to handle form submission and send email
+
+
+@app.route('/send_report_email', methods=['POST'])
+def send_report_email_route():
+    recipient_email = request.form.get('email')
+    report_type = request.form.get('report_type')  # 'expenses', 'budgets', 'savings'
+    
+    
+    # Generate the report
+    if report_type == 'expenses':
+        df = fetch_expenses()
+        file_path = 'data/expenses_report.csv'
+    elif report_type == 'budgets':
+        df = fetch_budgets()
+        file_path = 'data/budgets_report.csv'
+    elif report_type == 'savings':
+        df = fetch_savings_goals()
+        file_path = 'data/savings_report.csv'
+    else:
+        return jsonify({'error': 'Invalid report type'}), 400
+
+    os.makedirs('data', exist_ok=True)
+    df.to_csv(file_path, index=False)
+    html_table = tabulate(df, headers='keys', tablefmt='pretty', showindex=False)
+
+# Email credentials
+    sender_email = "hemanth4203@gmail.com"  # Replace with your email
+    sender_password = "yqye zeyn odec xrsk"        # Replace with your email password
+    smtp_server = "smtp.gmail.com"         # Replace with your email provider's SMTP server
+    smtp_port = 587                          # Typically 587 for TLS
+
+
+    subject = f'{report_type}'
+    body = f'{html_table}'
+
+
+# Create the email
+    message = MIMEMultipart()
+    message["From"] = sender_email
+    message["To"] = recipient_email
+    message["Subject"] = subject
+    message.attach(MIMEText(body, "plain"))
+
+# Send the email
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()  # Secure the connection
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, recipient_email, message.as_string())
+        print(f"Email sent successfully to {recipient_email}")
+    except Exception as e:
+        print(f"Failed to send email: {e}")  
+    return jsonify({'message': 'Email sent successfully'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
